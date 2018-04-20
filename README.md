@@ -28,10 +28,14 @@ The original [Daniel Nouri's implementation][m1] was built on [Lasagne][m2], a l
 
 ## Contents
 
-Two neural network models are implemented step by step, a single hidden layer model and a CNN model, and they are named to 1 and 2 in annotation respectively in following histograms.
+[In the Jupyter Notebook (click here to access)][c1], two neural network models are implemented step by step, a single hidden layer model and a CNN model, and they are named to 1 and 2 in annotation respectively in following histograms.
 
 Loss:
-![loss-compare](img/hist-compare.png)
+![loss-compare][c2]
 
 Prediction
-![pred-compare](img/pred-compare.png)
+![pred-compare][c3]
+
+[c1]:FacialKeypoints.ipynb
+[c2]:img/hist-compare.png
+[c3]:img/pred-compare.png
