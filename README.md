@@ -11,7 +11,7 @@
 
 ## Memo 简介
 
-This is a step by step replica of [maggle Facial Keypoints DetectionをKerasで実装する][m1] in Japanese, many thanks to [Shinya Yuki][m2].
+This is a step by step replica of [Kaggle Facial Keypoints DetectionをKerasで実装する][m1] in Japanese, many thanks to [Shinya Yuki][m2].
 
 The original [Daniel Nouri's implementation][m3] was built on [Lasagne][m4], a library for an obsolete deep learning framework [Theano][m5].
 
