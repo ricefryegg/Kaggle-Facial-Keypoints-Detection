@@ -19,4 +19,5 @@ Training | 7049  | 96x96      | grayscale | 15
 Some keypoint have about only 2,000 labels, others have more than 7,000.
 
 ![An example of one of the faces with three keypoints marked.](image_1.png)
+
 An example of one of the faces with three keypoints marked.

@@ -3,6 +3,7 @@
 from keras.models import model_from_json
 from keras.models import Sequential
 from keras.layers import Dense, Activation
+from keras.layers import Conv2D, MaxPool2D, Flatten
 from keras.optimizers import SGD
 from matplotlib import pyplot as plt
 from pandas.io.parsers import read_csv
@@ -27,7 +28,7 @@ def normlabel(y, reverse=False):
     else:
         return (y - 48) / 48
 
-def loadsets(fname, test=False, cols=None):
+def loadset(fname, test=False, cols=None):
     """Load datasets from CSV file
     
     Arguments:
@@ -61,27 +62,56 @@ def loadsets(fname, test=False, cols=None):
 
     return (X, y)
 
-def modellib(name='single'):
+def loadset2d(fname, test=False, cols=None):
+    (X, y) = loadset(fname, test=False, cols=None)
+    X = X.reshape(-1, 96, 96, 1)
+    return (X, y)
+
+def modellib(name='single', dim=9216):
     """keras NN model library
     
     Arguments:
         name {str} -- model name
             - 'single': 1-hidden-layer
-    
+        dim {int/tuple} -- input dimension (default: {9216})
+
     Return: compiled Keras model
     """
     model = Sequential()
 
     if name == 'single':
-        model.add(Dense(100,input_dim=9216))    # FC1
+        model.add(Dense(100,input_dim=dim))    # FC1
         model.add(Activation('relu'))
         model.add(Dense(30))                    # FC2
         sgd = SGD(lr=0.01 ,momentum=0.9, nesterov=True)
         model.compile(loss='mean_squared_error',optimizer=sgd)
     
+    if name == 'CNN':
+        model.add(Conv2D(32, (3, 3), input_shape=dim))  # CONV1
+        model.add(Activation('relu'))
+        model.add(MaxPool2D(pool_size=(2, 2)))  # FC1
+
+        model.add(Conv2D(64, (2, 2)))           # Conv2
+        model.add(Activation('relu'))
+        model.add(MaxPool2D(pool_size=(2, 2)))  # FC2
+
+        model.add(Conv2D(128, (2, 2)))          # Conv3
+        model.add(Activation('relu'))
+        model.add(MaxPool2D(pool_size=(2, 2)))  # FC3
+
+        model.add(Flatten())
+        model.add(Dense(500))
+        model.add(Activation('relu'))
+        model.add(Dense(500))
+        model.add(Activation('relu'))
+        model.add(Dense(30))                    # 30 coords
+
+        sgd = SGD(lr=0.01, momentum=0.9, nesterov=True)
+        model.compile(loss='mean_squared_error', optimizer=sgd)
+
     return model
 
-def histplot(hist, save=None,  show=True):
+def histplot(hist, save=None, show=True):
     """plotting loss function
     
     Arguments:
@@ -94,6 +124,36 @@ def histplot(hist, save=None,  show=True):
     plt.figure()
     plt.plot(hist.history['loss'], linewidth=2, label='train')
     plt.plot(hist.history['val_loss'], linewidth=2,label='valid set')
+    plt.xlabel('epoch')
+    plt.ylabel('loss')
+    # plt.ylim(1e-3, 1e-2)
+    plt.yscale('log')
+    plt.grid()               # show metrics(0, 20, 40...)
+    plt.legend(loc='best')
+    figure = plt.gcf()
+
+    if save != None:
+        figure.savefig(save, dpi=300)
+        print(save, 'saved.')
+
+    if show:
+        plt.show()
+
+def histplotdiff(hist1, hist2, save=None, show=True):
+    """plotting loss function
+    
+    Arguments:
+        hist {keras.callbacks.History} -- hist = model.fit
+    
+    Keyword Arguments:
+        save {str} -- filename if to save (default: {None})
+        show {bool} -- show plot (default: {True})
+    """
+    plt.figure()
+    plt.plot(hist1.history['loss'], linewidth=2, label='train1')
+    plt.plot(hist1.history['val_loss'], linewidth=2,label='valid1')
+    plt.plot(hist2.history['loss'], linewidth=2, label='train2')
+    plt.plot(hist2.history['val_loss'], linewidth=2,label='valid2')
     plt.xlabel('epoch')
     plt.ylabel('loss')
     # plt.ylim(1e-3, 1e-2)
@@ -125,7 +185,7 @@ def predplot(xtest, ypred, save=None, show=True):
     print('image',start,'to',start+16)
 
     fig = plt.figure(figsize=(12, 12))
-    fig.subplots_adjust(left=0, right=0.5, bottom=0, top=0.5, hspace=0.05, wspace=0.05)
+    # fig.subplots_adjust(left=0, right=0.5, bottom=0, top=0.5, hspace=0.05, wspace=0.05)
 
     for i in range(start, start+16):
         x, y = xtest[i], ypred[i]
@@ -134,6 +194,49 @@ def predplot(xtest, ypred, save=None, show=True):
         axis.imshow(img, cmap='gray')   # show image
         axis.scatter(normlabel(y[0::2], reverse=True),  # show lanmark
                      normlabel(y[1::2], reverse=True), marker='x', s=10)
+    figure = plt.gcf()
+    
+    if save != None:    # deprecated
+        figure.savefig(save, dpi=300)
+        print(save, 'saved.')
+
+    if show:
+        plt.show()
+
+def predplotdiff(xtest, ypred1, ypred2, save=None, show=True):
+    """compare pred outcome
+    
+    Arguments:
+        xtest {np.array} -- test img
+        ypred {np.array} -- pred label
+    
+    Keyword Arguments:
+        save {str} -- filename if to save (default: {None})
+        show {bool} -- show plot (default: {True})
+    """
+    total = xtest.shape[0]
+    start = random.randint(0, total-16)
+    print('image',start,'to',start+4)
+
+    # fig.subplots_adjust(left=0, right=0.5, bottom=0, top=0.5, hspace=0.05, wspace=0.05)
+
+    fig = plt.figure(figsize=(12, 6))
+    for n,i in enumerate(range(start, start+4)):
+        x, y1, y2 = xtest[i], ypred1[i], ypred2[i]
+        img  = x.reshape(96, 96)
+        
+        axis1 = fig.add_subplot(2, 4, 2*n+1, xticks=[], yticks=[])
+        axis1.imshow(img, cmap='gray')   # show image
+        axis1.scatter(normlabel(y1[0::2], reverse=True),  # show lanmark
+                      normlabel(y1[1::2], reverse=True), color='b', marker='x', s=10, label='pred1')
+        axis1.legend(loc='best')
+        
+        axis2 = fig.add_subplot(2, 4, 2*n+2, xticks=[], yticks=[])
+        axis2.imshow(img, cmap='gray')   # show image
+        axis2.scatter(normlabel(y2[0::2], reverse=True),  # show lanmark
+                      normlabel(y2[1::2], reverse=True), color='r', marker='x', s=10, label='pred2')
+        axis2.legend(loc='best')
+                
     figure = plt.gcf()
     
     if save != None:    # deprecated
@@ -179,3 +282,4 @@ def loadmodel(frame, weights, toprint=True):
         print('Structure from:', frame)
         print('Weights from:', weights)
     
+    return model
