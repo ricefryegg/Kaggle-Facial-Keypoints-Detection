@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+
+"""Utils by amblizer, for kaggle facial keypoints
+   detection with Keras, updated: 2018-04-21
+"""
+
 # ----------------------- modules
 
 from keras.models import model_from_json
