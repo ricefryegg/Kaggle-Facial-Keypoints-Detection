@@ -11,11 +11,11 @@
 
 ## Memo 简介
 
-This is a step by step replica of [Kaggle Facial Keypoints DetectionをKerasで実装する][in1] in Japanese, many thanks to [Shinya Yuki][in2].
+This is a step by step replica of [maggle Facial Keypoints DetectionをKerasで実装する][m1] in Japanese, many thanks to [Shinya Yuki][m2].
 
 The original [Daniel Nouri's implementation][m3] was built on [Lasagne][m4], a library for an obsolete deep learning framework [Theano][m5].
 
-这是我学习[Kaggle面部标识点识别][in1]博文的代码复现，非常感谢原作者[真也雪][in2]。感谢原作者[Daniel Nouri][m3]基于[Lasagne][m4]（一个[Theano][m5]的高级框架）的[博文][m3]。
+这是我学习[Kaggle面部标识点识别][m1]博文的代码复现，非常感谢原作者[真也雪][m2]。感谢原作者[Daniel Nouri][m3]基于[Lasagne][m4]（一个[Theano][m5]的高级框架）的[博文][m3]。
 
 [m1]:https://elix-tech.github.io/ja/2016/06/02/kaggle-facial-keypoints-ja.html
 [m2]:https://twitter.com/shinyaelix
