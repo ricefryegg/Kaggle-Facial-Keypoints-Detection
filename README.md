@@ -27,7 +27,7 @@ The original [Daniel Nouri's implementation][m3] was built on [Lasagne][m4], a l
 
 [Kaggle][d1] hosts facial keypoints detection competition and all you need is [here][d2].
 
-文中用到的 [Kaggle][Kaggle][d1] 数据集请[点击这里下载][d2]。
+文中用到的 [Kaggle][d1] 数据集请[点击这里下载][d2]。
 
 [d1]:https://www.kaggle.com
 [d2]:https://www.kaggle.com/c/facial-keypoints-detection/data
