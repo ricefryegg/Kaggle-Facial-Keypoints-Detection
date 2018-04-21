@@ -1,6 +1,6 @@
-## General
-test.csv
+# large
 training.csv
+test.csv
 
 # Data
 *.npy
